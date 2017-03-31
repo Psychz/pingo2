@@ -6,13 +6,13 @@ import (
 	"time"
 
 	"golang.org/x/net/icmp"
-	"golang.org/x/net/internal/iana"
+	// "golang.org/x/net/internal/iana"
 	"golang.org/x/net/ipv4"
 )
 
 const ICMPReadTimeout = 2
 const ICMPWriteTimeout = 2
-
+const ProtocolICMP     = 1
 // non-privileged ping on Linux requires special sysctl setting:
 //     sysctl -w net.ipv4.ping_group_range="0 0"
 //
@@ -60,7 +60,7 @@ func Ping(hostname string) (reply bool, err error) {
 	if err != nil {
 		return false, err
 	}
-	rm, err := icmp.ParseMessage(iana.ProtocolICMP, rb[:n])
+	rm, err := icmp.ParseMessage(ProtocolICMP, rb[:n])
 	if err != nil {
 		return false, err
 	}

@@ -13,6 +13,8 @@ type Config struct {
 	Timeout int
 	// SMTP relay config
 	SMTP SMTPConfig
+	// Twilio config
+	Twilio TwilioConfig
 	// Alert properties
 	Alert   Alert
 	Targets []Target
@@ -24,10 +26,18 @@ type Config struct {
 type Alert struct {
 	// On alert, send to this email address
 	ToEmail string
+	ToNumber string
 	// On alert, send from this email address
 	FromEmail string
+	FromNumber	string
 	// Trigger an alert every x seconds when in failed state
 	Interval int
+}
+
+type TwilioConfig struct {
+	Simple bool
+	SID	string
+	Token string
 }
 
 type SMTPConfig struct {

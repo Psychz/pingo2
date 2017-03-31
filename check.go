@@ -136,6 +136,14 @@ func runTarget(t Target, res chan TargetStatus, config Config) {
 				status.ErrorMsg = fmt.Sprintf("%s", err)
 			}
 			failed = !success
+		case "mc":
+			var success bool
+			success, err = MCQuery(addrURL.Host, config)
+			if err != nil {
+				log.Printf("[%d:%s] ping error, %s", t.Id, addrURL, err)
+				status.ErrorMsg = fmt.Sprintf("%s", err)
+			}
+			failed = !success
 		default:
 			var conn net.Conn
 			conn, err = net.DialTimeout("tcp", addrURL.Host, time.Duration(config.Timeout)*time.Second)
@@ -188,15 +196,23 @@ func runTarget(t Target, res chan TargetStatus, config Config) {
 }
 
 func alert(status *TargetStatus, config Config) {
-	if config.Alert.ToEmail != "" {
-		err := EmailAlert(*status, config)
+	if config.Twilio.SID != "" {
+		err := TwilioAlert(*status, config)
 		if err != nil {
 			log.Printf("%s", err)
 		}
-		log.Printf("[%d:%s] alert sent to %s", status.Target.Id, status.Target.Addr, config.Alert.ToEmail)
+		log.Printf("[%d:%s] alert sent to %s", status.Target.Id, status.Target.Addr, config.Alert.ToNumber)
 	} else {
-		if debug {
-			log.Printf("[%d:%s] alert NOT sent as no 'To:' email specified", status.Target.Id, status.Target.Addr)
+		if config.SMTP.Hostname != "" {
+			err := EmailAlert(*status, config)
+			if err != nil {
+				log.Printf("%s", err)
+			}
+			log.Printf("[%d:%s] alert sent to %s", status.Target.Id, status.Target.Addr, config.Alert.ToEmail)
+		} else {
+			if debug {
+				log.Printf("[%d:%s] alert NOT sent as no 'To:' email specified", status.Target.Id, status.Target.Addr)
+			}
 		}
 	}
 	status.LastAlert = time.Now()
