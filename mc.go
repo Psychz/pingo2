@@ -13,11 +13,13 @@ func MCQuery(hostname string, config Config) (reply bool, err error) {
 			conn, err := net.Dial("tcp", hostname)
 			if err != nil {
 				c <- false
+				return
 			}
 
 			_, err = PingMC(conn, hostname)
 			if err != nil {
 				c <- false
+				return
 			}
 			c <- true
 		}()
