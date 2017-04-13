@@ -60,6 +60,9 @@ An example config file is as follows:
 ToDo:
 
 MC monitor for player count being lower than threshold
+
 MC monitor for "drops"
+
 	- Store previous query for player count, divide by 4 = dropthreshold, if new player count =< (oldplayercount-dropthreshold) { DROP } (up for ideas for a better method of doing this)
+	
 Notify via Slack
